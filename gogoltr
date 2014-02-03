@@ -18,7 +18,7 @@ else
   $b.textarea(id: 'source').value = words
 end
 
-sleep 0.01
+$b.wait
 tab = $b.table(class: 'gt-baf-table')
 begin
 tab.rows.each do |r|
