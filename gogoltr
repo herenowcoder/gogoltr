@@ -22,6 +22,10 @@ def translate(from, to, words)
   end
 
   $b.wait
+  post_proc
+end
+
+def post_proc()
   tab = $b.table(class: 'gt-baf-table')
   begin
     tab.rows.each do |r|
