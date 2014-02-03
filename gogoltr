@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+require 'phantomjs'
+require 'watir-webdriver'
+
+Selenium::WebDriver::PhantomJS.path = Phantomjs.path
+$b = Watir::Browser.new :phantomjs
+
+if ARGV.size == 1
+  from, to, words = ['en','pl', ARGV[0]]
+else
+  from, to, words = ARGV
+end
+
+if words.split(' ').size == 1
+  $b.goto "http://translate.google.pl/##{from}/#{to}/#{words}"
+else
+  $b.goto "http://translate.google.pl/##{from}/#{to}/"
+  $b.textarea(id: 'source').value = words
+end
+
+sleep 0.01
+tab = $b.table(class: 'gt-baf-table')
+begin
+tab.rows.each do |r|
+  lst = r.cells.map {|c| c.text}
+  if lst.size == 1 # is head?
+    puts lst
+  else
+    # format is: ["", trN, back_trN1, back_trN2, ...back_trNM]
+    puts "%20s: %s" % [ lst[1], lst[2..-1].join(', ') ]
+  end
+end
+rescue Watir::Exception::UnknownObjectException
+  puts $b.span(id: 'result_box').text
+end
