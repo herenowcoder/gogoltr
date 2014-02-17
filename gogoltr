@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 require 'phantomjs'
 require 'watir-webdriver'
+require 'hpricot'
 
 Selenium::WebDriver::PhantomJS.path = Phantomjs.path
 $b = Watir::Browser.new :phantomjs
@@ -25,19 +26,24 @@ def translate(from, to, words)
 end
 
 def post_proc()
-  tab = $b.table(class: 'gt-baf-table')
   begin
-    tab.rows.each do |r|
-      lst = r.cells.map {|c| c.text}
-      if lst.size == 1 # is head?
-        puts lst
-      else
-        # format is: ["", trN, back_trN1, back_trN2, ...back_trNM]
-        puts "%20s: %s" % [ lst[1], lst[2..-1].join(', ') ]
-      end
-    end
+    print_trans_table Hpricot $b.table(class: 'gt-baf-table').html
   rescue Watir::Exception::UnknownObjectException
     puts $b.span(id: 'result_box').text
+  end
+end
+
+def print_trans_table(tab)
+  (tab/'tr').each do |r|
+    cells = r/'td/'
+    if cells.size == 1  # is head
+      lst = (cells/'span/').to_a
+      puts lst.join(' ')
+    else
+      # format is: [is_popular_mark, tN, "back_tN1, back_tN2, .. back_tNM"]
+      lst = cells[1..-1].map &:inner_text
+      puts "%20s:  %s" % [ lst[0], lst[1] ]
+    end
   end
 end
 
