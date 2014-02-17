@@ -22,7 +22,6 @@ def translate(from, to, words)
   end
 
   $b.wait
-  post_proc
 end
 
 def post_proc()
@@ -42,4 +41,4 @@ def post_proc()
   end
 end
 
-translate(*process_args(ARGV)) if $0 == __FILE__ 
+translate(*process_args(ARGV)) and post_proc if $0 == __FILE__ 
