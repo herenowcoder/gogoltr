@@ -21,7 +21,10 @@ def translate(from, to, words)
     $b.goto "http://translate.google.pl/##{from}/#{to}/"
     $b.textarea(id: 'source').value = words
   end
-
+  # This wait is not enough, google tr updates result slowly sometimes.
+  # I'd need some other check whether updating finished.
+  # Note that result is (sometimes) not filled only when using second
+  # if case above.
   $b.wait
 end
 
