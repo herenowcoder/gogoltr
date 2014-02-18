@@ -40,13 +40,19 @@ def extract(parsed_tab)
 end
 
 def print_trans_table(tab)
-  longest_tr = tab.select{ |r| r[0] == :translations }.max_by { |r| r[1].size }
-  max_len = longest_tr && longest_tr[1].size + 2
+  ts = tab.select{ |r| r[0] == :translations }
+  longest_tr  = ts.max_by { |r| r[1].size }
+  longest_btr = ts.max_by { |r| r[2].size }
+  max_btr_len = longest_btr && longest_btr[2].size
+  max_tr_len  = longest_tr && longest_tr[1].size
+  space_left = 80 - (max_tr_len + 3 + max_btr_len)
+  space_left = 0 if space_left < 0
+  max_tr_len += [4, space_left].min
   tab.each do |r|
     if r[0] == :head
       puts r.drop(1).join ' '
     else
-      puts "%#{max_len}s:  %s" % [ r[1], r[2] ]
+      puts "%#{max_tr_len}s:  %s" % [ r[1], r[2] ]
     end
   end
 end
