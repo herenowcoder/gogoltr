@@ -20,22 +20,33 @@ end
 
 def post_proc()
   begin
-    print_trans_table Hpricot $b.table(class: 'gt-baf-table').html
+    print_trans_table extract Hpricot $b.table(class: 'gt-baf-table').html
   rescue Watir::Exception::UnknownObjectException
     puts $b.span(id: 'result_box').text
   end
 end
 
-def print_trans_table(tab)
-  (tab/'tr').each do |r|
+def extract(parsed_tab)
+  (parsed_tab/'tr').map do |r|
     cells = r/'td/'
     if cells.size == 1  # is head
-      lst = (cells/'span/').to_a
-      puts lst.join(' ')
+      (cells/'span/').to_a.unshift :head
     else
-      # format is: [is_popular_mark, tN, "back_tN1, back_tN2, .. back_tNM"]
-      lst = cells[1..-1].map &:inner_text
-      puts "%20s:  %s" % [ lst[0], lst[1] ]
+      #  td cells are: [is_popular_mark, tN, "back_tN1, back_tN2, .. back_tNM"]
+      #  where: tN = Nth translation, back_tNM = M back translations of N
+      cells[1..-1].map(&:inner_text).unshift :translations
+    end
+  end
+end
+
+def print_trans_table(tab)
+  longest_tr = tab.select{ |r| r[0] == :translations }.max_by { |r| r[1].size }
+  max_len = longest_tr.nil? ? 20 : longest_tr[1].size + 2
+  tab.each do |r|
+    if r[0] == :head
+      puts r.join ' '
+    else
+      puts "%#{max_len}s:  %s" % [ r[1], r[2] ]
     end
   end
 end
