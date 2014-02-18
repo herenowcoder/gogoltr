@@ -41,7 +41,7 @@ end
 
 def print_trans_table(tab)
   longest_tr = tab.select{ |r| r[0] == :translations }.max_by { |r| r[1].size }
-  max_len = longest_tr.nil? ? 20 : longest_tr[1].size + 2
+  max_len = longest_tr && longest_tr[1].size + 2
   tab.each do |r|
     if r[0] == :head
       puts r.join ' '
