@@ -15,7 +15,7 @@ def process_args(args)
 end
 
 def translate(from, to, words)
-  # todo: erl-encode unicode chars
+  # todo: url-encode unicode chars
   $b.goto "http://translate.google.pl/##{from}/#{to}/#{words.sub ' ','%20'}"
 end
 
