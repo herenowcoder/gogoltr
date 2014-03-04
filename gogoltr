@@ -48,12 +48,12 @@ def print_trans_table(tab)
   max_tr_len  = longest_tr && longest_tr[1].size
   space_left  = (`tput cols` || 80).to_i - (max_tr_len + 3 + max_btr_len)
   space_left  = 0 if space_left < 0
-  max_tr_len += [4, space_left].min
+  tr_align = max_tr_len + [4, space_left].min
   tab.each do |r|
     if r[0] == :head
       puts r.drop(1).join ' '
     else
-      puts "%#{max_tr_len}s:  %s" % [ r[1], r[2] ]
+      puts "%#{tr_align}s:  %s" % [ r[1], r[2] ]
     end
   end
 end
